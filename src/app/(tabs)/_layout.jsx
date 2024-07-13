@@ -24,6 +24,15 @@ export default function TabsLayout() {
           ),
         }}
       />
+      <Tabs.Screen
+        name="url"
+        options={{
+          headerTitle: "URL Shortner",
+          tabBarIcon: ({ color }) => (
+            <FontAwesome size={26} color={color} name="link" />
+          ),
+        }}
+      />
     </Tabs>
   );
 }

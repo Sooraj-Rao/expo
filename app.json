@@ -2,7 +2,7 @@
   "expo": {
     "name": "my-app",
     "slug": "my-app",
-    "scheme": "todo-app",
+    "scheme": "my-app",
     "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -16,9 +16,9 @@
       "supportsTablet": true
     },
     "android": {
-      "package": "todo.soorajrao.in",
+      "package": "my.soorajrao.in",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/icon.png",
         "backgroundColor": "#ffffff"
       }
     },
