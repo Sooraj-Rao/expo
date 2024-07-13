@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, TextInput, Pressable, Text, ToastAndroid } from "react-native";
+import { View, TextInput, Pressable, Text, ToastAndroid, StyleSheet } from "react-native";
 
 export const showToast = (message, duration = ToastAndroid.LONG) => {
   ToastAndroid.show(message, duration);
@@ -9,7 +9,7 @@ const Home = () => {
   const [title, setTitle] = useState("");
   const [key, setKey] = useState("");
   const [description, setDescription] = useState("");
-  const [loader, setloader] = useState(false);
+  const [loader, setLoader] = useState(false);
 
   const handleSubmit = async () => {
     try {
@@ -19,35 +19,36 @@ const Home = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ key, title, desc: description }),
       };
-      setloader(true);
+      setLoader(true);
       const res = await fetch(
         `https://1ob.vercel.app/api/todo/${key}`,
         requestOptions
       );
       const { message } = await res.json();
       showToast(message);
-      setDescription('')
-      setTitle('')
+      setDescription('');
+      setTitle('');
     } catch (error) {
       console.log(error);
       showToast("Failed to fetch");
     } finally {
-      setloader(false);
+      setLoader(false);
     }
   };
+
   return (
-    <View className="container p-3">
+    <View style={styles.container}>
       <TextInput
-        placeholder="key"
+        placeholder="Key"
         value={key}
         onChangeText={setKey}
-        className="p-2  border-black/20 border rounded-lg"
+        style={styles.input}
       />
       <TextInput
         placeholder="Title"
         value={title}
         onChangeText={setTitle}
-        className="p-2 mt-14 mb-2 border-black/20 border rounded-lg"
+        style={[styles.input, styles.marginVertical]}
       />
       <TextInput
         placeholder="Description"
@@ -55,20 +56,53 @@ const Home = () => {
         onChangeText={setDescription}
         numberOfLines={4}
         multiline
-        className="p-2 mb-2 mt-2 border-black/20 border rounded-lg"
+        style={[styles.input, styles.marginVertical]}
       />
       <Pressable
         onPress={handleSubmit}
-        className={` py-3 px-6 mt-10 rounded-lg
-        ${!loader ? "bg-black" : "bg-black/40"}
-        `}
+        style={[
+          styles.button,
+          loader ? styles.buttonDisabled : styles.buttonEnabled,
+        ]}
       >
-        <Text className="text-center text-white">
+        <Text style={styles.buttonText}>
           {loader ? "Saving...." : "Save"}
         </Text>
       </Pressable>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    padding: 16,
+  },
+  input: {
+    padding: 8,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 8,
+  },
+  marginVertical: {
+    marginTop: 14,
+    marginBottom: 2,
+  },
+  button: {
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    marginTop: 10,
+    borderRadius: 8,
+  },
+  buttonEnabled: {
+    backgroundColor: 'black',
+  },
+  buttonDisabled: {
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+  },
+  buttonText: {
+    textAlign: 'center',
+    color: 'white',
+  },
+});
 
 export default Home;

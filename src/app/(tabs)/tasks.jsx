@@ -36,7 +36,7 @@ export default function TaskList() {
   const handleGet = async (isRefreshing = false) => {
     try {
       if (!key) return showToast("Key required!");
-      if (!isRefreshing) setLoader(true);
+      setLoader(true);
       const res = await fetch(`https://1ob.vercel.app/api/todo/${key}`);
       const { message, data: resData, error } = await res.json();
       if (error) {
@@ -54,6 +54,7 @@ export default function TaskList() {
 
   const handleDel = async (id) => {
     try {
+      setLoader(true);
       if (!key) return showToast("Key required!");
       const requestOptions = {
         method: "DELETE",
@@ -69,6 +70,8 @@ export default function TaskList() {
     } catch (error) {
       console.log(error);
       showToast("Failed to fetch");
+    } finally {
+      setLoader(false);
     }
   };
 
@@ -77,19 +80,23 @@ export default function TaskList() {
     handleGet(true);
   };
 
-  const Item = ({ title, desc, date ,id}) => (
-    <View style={{ backgroundColor: "#e0e0e0", marginVertical: 8, padding: 8 }}>
-      <View className=" flex-row justify-between">
-      <Text className=" text-base font-bold">{title}</Text>
-      <AntDesign onPress={()=>handleDel(id)} name="delete" size={20} color="black" />
+  const Item = ({ title, desc, date, id }) => {
+    return (
+      <View style={{ backgroundColor: "#e0e0e0", marginVertical: 8, padding: 8 }}>
+        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+          <Text style={{ fontSize: 16, fontWeight: "bold" }}>{title}</Text>
+          <AntDesign onPress={() => handleDel(id)} name="delete" size={20} color="black" />
+        </View>
+        <Text style={{ fontSize: 10, marginVertical: 4 }}>{Dateformatter(date)}</Text>
+        <Text style={{ fontSize: 14, borderTopWidth: 1, borderTopColor: "rgba(0, 0, 0, 0.2)" }}>{desc}</Text>
       </View>
-      <Text className=" text-xs my-1">{Dateformatter(date)}</Text>
-      <Text className=" text-sm border-t border-black/20">{desc}</Text>
-    </View>
-  );
+    )
+  }
+
 
   return (
     <View style={{ margin: 16 }}>
+
       <FlatList
         showsVerticalScrollIndicator={false}
         data={data}
@@ -100,7 +107,7 @@ export default function TaskList() {
         refreshing={refreshing}
         onRefresh={onRefresh}
         ListHeaderComponent={
-          <View className=" flex-row items-center justify-center gap-10">
+          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 10 }}>
             <TextInput
               placeholder="Enter key"
               value={key}
@@ -112,8 +119,8 @@ export default function TaskList() {
                 borderRadius: 8,
               }}
             />
-            <Pressable className=" bg-black  rounded-md" onPress={handleGet}>
-              <Text className="text-white px-6 py-3  text-sm">
+            <Pressable style={{ backgroundColor: "black", borderRadius: 8 }} onPress={handleGet}>
+              <Text style={{ color: "white", paddingHorizontal: 24, paddingVertical: 12, fontSize: 14 }}>
                 {loader ? "Fetching...." : "Fetch"}
               </Text>
             </Pressable>
