@@ -6,6 +6,7 @@ import {
   TextInput,
   View,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import { showToast } from ".";
 import { AntDesign } from '@expo/vector-icons';
@@ -33,7 +34,7 @@ export default function TaskList() {
   const [loader, setLoader] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
-  const handleGet = async (isRefreshing = false) => {
+  const handleGet = async () => {
     try {
       if (!key) return showToast("Key required!");
       setLoader(true);
@@ -42,7 +43,7 @@ export default function TaskList() {
       if (error) {
         return showToast(message);
       }
-      setData(resData);
+      setData(resData?.reverse());
     } catch (error) {
       console.log(error);
       showToast("Failed to fetch");
@@ -54,19 +55,36 @@ export default function TaskList() {
 
   const handleDel = async (id) => {
     try {
-      setLoader(true);
       if (!key) return showToast("Key required!");
-      const requestOptions = {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-      };
-      const res = await fetch(
-        `https://1ob.vercel.app/api/todo/${key}?id=${id}`,
-        requestOptions
+      Alert.alert(
+        "Confirm Delete",
+        "Are you sure you want to delete this task?",
+        [
+          {
+            text: "Cancel",
+            style: "cancel",
+          },
+          {
+            text: "Delete",
+            onPress: async () => {
+              setLoader(true);
+              const requestOptions = {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" },
+              };
+              const res = await fetch(
+                `https://1ob.vercel.app/api/todo/${key}?id=${id}`,
+                requestOptions
+              );
+              const { message } = await res.json();
+              showToast(message);
+              handleGet();
+            },
+          },
+        ],
+        { cancelable: false }
       );
-      const { message } = await res.json();
-      showToast(message);
-      handleGet();
+
     } catch (error) {
       console.log(error);
       showToast("Failed to fetch");
@@ -77,7 +95,7 @@ export default function TaskList() {
 
   const onRefresh = () => {
     setRefreshing(true);
-    handleGet(true);
+    handleGet();
   };
 
   const Item = ({ title, desc, date, id }) => {
@@ -93,10 +111,8 @@ export default function TaskList() {
     )
   }
 
-
   return (
     <View style={{ margin: 16 }}>
-
       <FlatList
         showsVerticalScrollIndicator={false}
         data={data}
@@ -126,15 +142,7 @@ export default function TaskList() {
             </Pressable>
           </View>
         }
-        ListFooterComponent={
-          loader && (
-            <ActivityIndicator
-              size="large"
-              color="#0000ff"
-              style={{ marginVertical: 16 }}
-            />
-          )
-        }
+       
       />
     </View>
   );

@@ -2,13 +2,13 @@
   "expo": {
     "name": "my-app",
     "slug": "my-app",
-    "scheme": "instagram-app",
-    "version": "1.0.0",
+    "scheme": "todo-app",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
