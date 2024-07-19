@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, TextInput, Pressable, Text, ToastAndroid, StyleSheet } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, TextInput, Pressable, Text, ToastAndroid, StyleSheet, BackHandler, Keyboard } from 'react-native';
 import * as Clipboard from 'expo-clipboard';
 
 export const showToast = (message, duration = ToastAndroid.LONG) => {
@@ -7,15 +7,26 @@ export const showToast = (message, duration = ToastAndroid.LONG) => {
 };
 
 const Url = () => {
-    const Server = 'https://aa.vercel.app';
+    const Server = (process.env.EXPO_PUBLIC_API_URL).replace('todo.', '');
     const [loader, setLoader] = useState(false);
     const [custom, setCustom] = useState('');
     const [long, setLong] = useState('');
-    const [key] = useState(true);
+    const [key] = useState(process.env.EXPO_PUBLIC_API_KEY);
     const [short, setShort] = useState('');
+
+    useEffect(() => {
+        const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackPress);
+        return () => backHandler.remove();
+    }, []);
+
+    const handleBackPress = () => {
+        BackHandler.exitApp();
+        return true;
+    };
 
     const handleSubmit = async () => {
         try {
+            Keyboard.dismiss();
             if (!long) return showToast("Long URL is required");
             const requestOptions = {
                 method: "POST",
@@ -34,6 +45,7 @@ const Url = () => {
                 setShort(newUrl);
                 await Clipboard.setStringAsync(newUrl);
                 showToast("Copied to clipboard");
+                handleBackPress();
             }
 
             setCustom('');

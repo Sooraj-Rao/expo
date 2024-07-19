@@ -1,11 +1,11 @@
 import React, { useState } from "react";
+
 import {
   FlatList,
   Pressable,
   Text,
   TextInput,
   View,
-  ActivityIndicator,
   Alert,
 } from "react-native";
 import { showToast } from ".";
@@ -29,16 +29,17 @@ const Dateformatter = (isoDateString) => {
 };
 
 export default function TaskList() {
-  const [key, setKey] = useState("");
+  let key = process.env.EXPO_PUBLIC_API_KEY
+  let Server = process.env.EXPO_PUBLIC_API_URL
+
   const [data, setData] = useState([]);
   const [loader, setLoader] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
   const handleGet = async () => {
     try {
-      if (!key) return showToast("Key required!");
       setLoader(true);
-      const res = await fetch(`https://1ob.vercel.app/api/todo/${key}`);
+      const res = await fetch(`${Server}/api/todo/${key}`);
       const { message, data: resData, error } = await res.json();
       if (error) {
         return showToast(message);
@@ -52,10 +53,8 @@ export default function TaskList() {
       setRefreshing(false);
     }
   };
-
   const handleDel = async (id) => {
     try {
-      if (!key) return showToast("Key required!");
       Alert.alert(
         "Confirm Delete",
         "Are you sure you want to delete this task?",
@@ -67,18 +66,23 @@ export default function TaskList() {
           {
             text: "Delete",
             onPress: async () => {
-              setLoader(true);
-              const requestOptions = {
-                method: "DELETE",
-                headers: { "Content-Type": "application/json" },
-              };
-              const res = await fetch(
-                `https://1ob.vercel.app/api/todo/${key}?id=${id}`,
-                requestOptions
-              );
-              const { message } = await res.json();
-              showToast(message);
-              handleGet();
+              try {
+                setLoader(true);
+                const requestOptions = {
+                  method: "DELETE",
+                  headers: { "Content-Type": "application/json" },
+                };
+                const res = await fetch(
+                  `${Server}/api/todo/${key}?id=${id}`,
+                  requestOptions
+                );
+                const { message } = await res.json();
+                showToast(message);
+                handleGet();
+              } catch (error) {
+                showToast('Failed to delete');
+                console.log(error);
+              }
             },
           },
         ],
@@ -124,17 +128,7 @@ export default function TaskList() {
         onRefresh={onRefresh}
         ListHeaderComponent={
           <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 10 }}>
-            <TextInput
-              placeholder="Enter key"
-              value={key}
-              onChangeText={setKey}
-              style={{
-                padding: 8,
-                borderColor: "#ccc",
-                borderWidth: 1,
-                borderRadius: 8,
-              }}
-            />
+
             <Pressable style={{ backgroundColor: "black", borderRadius: 8 }} onPress={handleGet}>
               <Text style={{ color: "white", paddingHorizontal: 24, paddingVertical: 12, fontSize: 14 }}>
                 {loader ? "Fetching...." : "Fetch"}
@@ -142,7 +136,7 @@ export default function TaskList() {
             </Pressable>
           </View>
         }
-       
+
       />
     </View>
   );
