@@ -30,7 +30,7 @@ export default function RootLayout() {
         },
         trigger: {
           hour: 21,
-          minute: 3,
+          minute: 6,
           repeats: true,
         },
       });
@@ -39,8 +39,8 @@ export default function RootLayout() {
     Notifications.setNotificationHandler({
       handleNotification: async () => ({
         shouldShowAlert: true,
-        shouldPlaySound: false,
-        shouldSetBadge: false,
+        shouldPlaySound: true,
+        shouldSetBadge: true,
       }),
     });
 
