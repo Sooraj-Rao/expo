@@ -45,7 +45,7 @@ const Url = () => {
                 setShort(newUrl);
                 await Clipboard.setStringAsync(newUrl);
                 showToast("Copied to clipboard");
-                handleBackPress();
+                // handleBackPress();
             }
 
             setCustom('');
