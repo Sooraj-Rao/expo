@@ -18,19 +18,45 @@ export default function RootLayout() {
         return;
       }
 
-      await scheduleNightlyNotification();
+      await scheduleDailyNotifications();
     }
 
-    async function scheduleNightlyNotification() {
+    async function scheduleDailyNotifications() {
       await Notifications.scheduleNotificationAsync({
         content: {
-          title: "Nightly Reminder",
-          body: "Have a great sleep Nigga!",
-          data: { task: 'work work work' },
+          title: "Good Morning!",
+          body: "Start your day with a positive attitude!",
+          data: { task: 'morning motivation' },
+        },
+        trigger: {
+          hour: 8,
+          minute: 0,
+          repeats: true,
+        },
+      });
+
+      await Notifications.scheduleNotificationAsync({
+        content: {
+          title: "Good Afternoon!",
+          body: "Take a break and recharge for the rest of the day!",
+          data: { task: 'afternoon break' },
+        },
+        trigger: {
+          hour: 12,
+          minute: 0,
+          repeats: true,
+        },
+      });
+
+      await Notifications.scheduleNotificationAsync({
+        content: {
+          title: "Good Night!",
+          body: "Time to wind down and relax.",
+          data: { task: 'nightly relaxation' },
         },
         trigger: {
           hour: 21,
-          minute: 6,
+          minute: 0,
           repeats: true,
         },
       });
